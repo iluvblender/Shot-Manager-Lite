@@ -29,7 +29,7 @@ bl_info = {
 
 import bpy,os
 
-from .ui import (SM_PT_shot_manager, SM_UL_List, SM_PT_output,SM_PT_QuickPanel,SM_PT_settings)
+from .ui import (SM_PT_shot_manager, SM_UL_List, SM_PT_output,SM_PT_QuickPanel,SM_PT_settings, SM_PT_Footer)
 from .operators import*
 
 from bpy.props import (StringProperty,
@@ -104,7 +104,7 @@ def fixMarkers(self,start,err):
         
 
     if err == 'IndexError':
-        print(err)
+        #print(err)
         #try name
         i= markers.find(link.name)
         if i > -1:
@@ -112,7 +112,7 @@ def fixMarkers(self,start,err):
             return markers[i].frame
 
         else:
-            print('name not found')
+            #print('name not found')
             link.index = 9999
             link.name = 'Marker Not Found' 
             if start == 'start':
@@ -122,7 +122,7 @@ def fixMarkers(self,start,err):
             return 0
 
     elif err == 'NameError':
-        print(err)
+        #print(err)
         #try name
         i= markers.find(link.name)
         if i > -1:
@@ -131,7 +131,7 @@ def fixMarkers(self,start,err):
 
         elif markers[link.index].select== True:
             #Renamed
-            print('A Marker was re-named')
+            #print('A Marker was re-named')
             #batch re-name
             for shot in scene.sm_prop_grp:
                 if shot.start_marker.name == link.name: 
@@ -142,7 +142,7 @@ def fixMarkers(self,start,err):
             return markers[link.index].frame
 
         else:
-            print('A Marker was deleted')
+            #print('A Marker was deleted')
             link.index = 9999
             link.name = 'Marker Missing' 
             if start == 'start':
@@ -294,7 +294,7 @@ class SM_PropertyGroup(bpy.types.PropertyGroup):
 classes = (
 SM_End_Marker_grp, SM_Start_Marker_grp,SM_UL_List, SM_PropertyGroup, SM_OT_Link,
 SM_OT_Qpick, SM_OT_save, SM_OT_mainLayer, SM_OT_saveJSON, SM_OT_openJSON, LIST_OT_sort,LIST_OT_delete,
-SM_PT_shot_manager,SM_PT_settings, SM_PT_output, SM_PT_QuickPanel, 
+SM_PT_shot_manager,SM_PT_settings, SM_PT_output, SM_PT_QuickPanel, SM_PT_Footer
 
     )
 
