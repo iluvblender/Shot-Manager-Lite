@@ -143,6 +143,27 @@ class SM_PT_settings(Panel):
         col.operator('sm.savejson', text= 'Export shots to .json')
         col.operator('sm.openjson', text= 'Import shots from .json')
 
+class SM_PT_Footer(Panel):
+    bl_label = "Data"
+    bl_parent_id = "SCENE_PT_shotmanager"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+
+    bl_options = {'DEFAULT_CLOSED'}
+
+    def draw(self, context):
+        layout= self.layout
+        col = layout.column()
+        
+        col = col.split()
+        col.label(text='Shots to Json')
+        col.operator('sm.savejson', text= 'Export')
+        col.operator('sm.openjson', text= 'Import')
+        col = layout.column()
+        col = layout.split(factor= 0.9)
+        #col.separator(factor=1.0)
+        col.label(text='Remove all shots')
+        col.operator('my_list.delete',text='',icon = 'TRASH').delete_all=True
 
 class SM_PT_output(Panel):
     bl_label = "Output Summary"
