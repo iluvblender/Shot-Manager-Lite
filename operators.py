@@ -363,6 +363,7 @@ class SM_OT_saveJSON(bpy.types.Operator):
         scene = context.scene
         index = scene.sm_list_index
         shot = scene.sm_prop_grp[index]
+        from .__init__ import bl_info
 
         filepath = os.path.splitext(self.filepath)[0]
         json_file = open(bpy.path.abspath(filepath)+'.json',"w+")
@@ -433,6 +434,7 @@ class SM_OT_openJSON(bpy.types.Operator):
     def execute(self, context):
         scene = context.scene
         op = False
+        
 
         try:
             with open(self.filepath, 'r') as json_file:
