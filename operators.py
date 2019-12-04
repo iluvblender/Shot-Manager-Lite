@@ -30,6 +30,12 @@ from bpy.props import (StringProperty,
                        )
 
 #----------------------------------------------------------------------------------------
+bpy.app.handlers.render_pre.clear()
+
+def render_pre(self):
+    updateList(self,bpy.context)
+
+bpy.app.handlers.render_pre.append(render_pre)
 
 def shotChange(self,context):
     scene = context.scene
@@ -50,8 +56,9 @@ def shotChange(self,context):
         else:
             shot.end_marker.frame
 
-        scene.frame_current = min(scene.frame_current,scene.frame_end)
-        scene.frame_current = max(scene.frame_current,scene.frame_start)
+        #scene.frame_current = min(scene.frame_current,scene.frame_end)
+        #scene.frame_current = max(scene.frame_current,scene.frame_start)
+        scene.frame_current = scene.frame_start
 
         #frame to playhead
         if scene.sm_frame:
@@ -62,10 +69,8 @@ def shotChange(self,context):
                     #spaces= area.spaces[1]
                     region = area.regions[3]
                     override = {'window': window, 'screen': screen,'region':region, 'area': area}
-                    if (scene.frame_end - scene.frame_start) < 30:
-                        bpy.ops.action.view_frame(override)
-                    else:
-                        bpy.ops.action.view_all(override)
+                    bpy.ops.action.view_frame(override)
+
                     
         #Update View layer to 'Primary
         if shot.main in scene.view_layers.keys():
