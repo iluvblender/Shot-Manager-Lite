@@ -87,7 +87,6 @@ def updateList(self,context):
         index = scene.sm_list_index
         shot = scene.sm_prop_grp[index]
         name = shot.name.strip()
-        shot.name = name
         render_path = os.path.join(path, name , name + '_')
 
         if shot.custom_camera != None:
