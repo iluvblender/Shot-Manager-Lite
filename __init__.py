@@ -46,7 +46,12 @@ from bpy.props import (StringProperty,
 
 
 
+bpy.app.handlers.render_pre.clear()
 
+def render_pre(self):
+    updateList(self,bpy.context)
+
+bpy.app.handlers.render_pre.append(render_pre)
 
 def get_from_marker_start(self):
     return get_marker_check(self,'start')
