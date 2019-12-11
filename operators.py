@@ -30,12 +30,7 @@ from bpy.props import (StringProperty,
                        )
 
 #----------------------------------------------------------------------------------------
-bpy.app.handlers.render_pre.clear()
 
-def render_pre(self):
-    updateList(self,bpy.context)
-
-bpy.app.handlers.render_pre.append(render_pre)
 
 def shotChange(self,context):
     scene = context.scene
