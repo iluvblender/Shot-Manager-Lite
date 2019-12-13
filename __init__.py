@@ -189,7 +189,7 @@ class SM_Start_Marker_grp(bpy.types.PropertyGroup):
 
     index: IntProperty(
         name = "Marker Index",
-        default = 100
+        default = 9999
         )
 
     frame: IntProperty(
