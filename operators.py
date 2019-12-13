@@ -350,8 +350,8 @@ class SM_OT_saveJSON(bpy.types.Operator):
     bl_label = "Save json"
     bl_description = "Save shots into json" 
 
-
-    filepath : bpy.props.StringProperty(subtype="DIR_PATH")
+    filepath : StringProperty(subtype="DIR_PATH")
+    
     @classmethod
     def poll(self,context):
         return len(context.scene.sm_prop_grp) != 0
@@ -368,9 +368,9 @@ class SM_OT_saveJSON(bpy.types.Operator):
 
         filepath = os.path.splitext(self.filepath)[0]
         json_file = open(bpy.path.abspath(filepath)+'.json',"w+")
-
+        
         version = bl_info['version']
- 
+
         dictionary = {'version': version}
 
         for index,shot in enumerate(scene.sm_prop_grp):
@@ -378,21 +378,23 @@ class SM_OT_saveJSON(bpy.types.Operator):
             items = {}
 
             for prop in shot.keys():
-                if prop == 'start_marker' or prop =='end_marker':
+                #markers
+                if prop == 'start_marker':
                     items_list = shot[prop].items()
-                    try:
-                        i = scene.sm_prop_grp[index].start_marker.frame
-                        items_list.append(('frame',i))
-                    except:
-                        pass
-                    try:
-                        i = scene.sm_prop_grp[index].end_marker.frame
-                        items_list.append(('frame',i))
-                    except:
-                        pass
-
+                    i = scene.sm_prop_grp[index].start_marker.frame
+                    #frame isn't listed in items()
+                    items_list.append(('frame',i))
                     items[prop] = dict(items_list)
+                    
 
+                elif prop == 'end_marker':
+                    items_list = shot[prop].items()
+                    i = scene.sm_prop_grp[index].end_marker.frame
+                    items_list.append(('frame',i))
+                    #frame isn't listed in items()
+                    items[prop] = dict(items_list)
+                    
+                #camera object
                 elif prop == 'custom_camera':
                     if shot[prop] != None:
                         items[prop] = shot[prop].name
@@ -401,7 +403,7 @@ class SM_OT_saveJSON(bpy.types.Operator):
 
                 else:
                     items[prop] = shot[prop]
-
+            #save shot
             dictionary[str(index)] = items
 
         save = json.dumps(dictionary, indent=4)
@@ -410,8 +412,6 @@ class SM_OT_saveJSON(bpy.types.Operator):
 
         self.report({'INFO'},'wrote .json at '+ bpy.path.abspath(self.filepath))
 
-        #print(items)
-        #print(dictionary)
 
         return {'FINISHED'}
         
@@ -421,21 +421,17 @@ class SM_OT_openJSON(bpy.types.Operator):
     bl_label = "Open json"
     bl_description = "Load shots from json" 
 
-
-    filepath : bpy.props.StringProperty(subtype="DIR_PATH")
-    ignore: bpy.props.BoolProperty(name="Ignore existing shots",default = True)
-
+    filepath : StringProperty(subtype="DIR_PATH")
+    ignore : BoolProperty(name="Ignore existing shots",default = True)
 
     def invoke(self, context, event):
         context.window_manager.fileselect_add(self)
         return {'RUNNING_MODAL'}
 
-    #def draw(self,context):
 
     def execute(self, context):
         scene = context.scene
         op = False
-        
 
         try:
             with open(self.filepath, 'r') as json_file:
@@ -449,7 +445,7 @@ class SM_OT_openJSON(bpy.types.Operator):
         if op == True:
             try: 
                 version = json_parsed['version']
-                #print('version:',json_parsed['version'])
+                print('version:',json_parsed['version'])
 
             except:
                 self.report({'ERROR'},'Not a valid JSON file')
@@ -472,43 +468,60 @@ class SM_OT_openJSON(bpy.types.Operator):
                         notes = props.get('notes','')
                         alpha= props.get('alpha',False)
                         
+                        
                         start_marker_name = props.get('start_marker',"").get('name',"")
                         start_marker_index = props.get('start_marker',"").get('index',9999)
                         start_marker_frame = props.get('start_marker',"").get('frame',0)
-                    
+
                         end_marker_name = props.get('end_marker',"").get('name',"")
                         end_marker_index = props.get('end_marker',"").get('index',9999)
                         end_marker_frame = props.get('end_marker',"").get('frame',0)
-                        
 
-                        #print(json_parsed[index])
+                        print(json_parsed[index])
                         new = scene.sm_prop_grp.add()
-                        new.name = name
+                        #Markers and start/End
+                        if start_marker_index == 9999:
+                            new.start_frameALT = start_frameALT
+                        else:
+                            try:
+                                if start_marker_name not in scene.timeline_markers.keys():
+                                    new.start_frameALT = start_marker_frame
+                                    print('missing marker, flattened')
+                                else:
+                                    new.start_marker.index = start_marker_index
+                                    new.start_marker.name = start_marker_name
+                                     
+                            except:
+                                pass
+                                print('could not import start marker')
 
+                        if end_marker_index == 9999:
+                            new.end_frameALT = end_frameALT
+                        else:
+                            try:
+                                if end_marker_name not in scene.timeline_markers.keys():
+                                    new.end_frameALT = end_marker_frame
+                                    print('missing marker, flattened')
+                                else:
+                                    new.end_marker.index = end_marker_index 
+                                    new.end_marker.name = end_marker_name
+                            except:
+                                pass
+                                print('could not import end marker')
+                        #Other Data
+                        new.name = name
                         if custom_camera in scene.objects.keys():
                             new.custom_camera = scene.objects[custom_camera] 
-                        
-                        if start_marker_index != 9999:
-                            new.start_frameALT = start_marker_frame
-                        else:
-                            new.start_frameALT = start_frameALT
-
-                        if end_marker_index != 9999:
-                            new.start_frameALT = end_marker_frame
-                        else:
-                            new.end_frameALT = end_frameALT
 
                         new.view_layers = view_layers
                         if enable == 1:
                             new.enable = True
+
                         new.main = main
                         new.notes = notes
                         new.alpha = alpha
 
-                        new.start_marker.name = start_marker_name
-                        new.start_marker.index = start_marker_index
-                        new.end_marker.name = end_marker_name
-                        new.end_marker.index = end_marker_index
+                        
 
 
                 
