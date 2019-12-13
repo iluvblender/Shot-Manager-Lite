@@ -68,8 +68,9 @@ def shotChange(self,context):
 
                     
         #Update View layer to 'Primary
-        if shot.main in scene.view_layers.keys():
-            context.window.view_layer = scene.view_layers[shot.main]
+        if scene.sm_mainLayer == True:
+          if shot.main in scene.view_layers.keys():
+              context.window.view_layer = scene.view_layers[shot.main]
 
         updateList(self,context)
 
