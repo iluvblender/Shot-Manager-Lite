@@ -44,14 +44,21 @@ from bpy.props import (StringProperty,
 
 #----------------------------------------------------------------------------------------
 
+def update_on_frame(self):
+    scene =  bpy.context.scene
+    index = scene.sm_list_index
 
+    if scene.sm_use == True and len(scene.sm_prop_grp) !=0:
+        scene.sm_prop_grp[index].start_marker.frame
+        scene.sm_prop_grp[index].end_marker.frame
+    else:
+        pass
 
-bpy.app.handlers.render_pre.clear()
 
 def render_pre(self):
     updateList(self,bpy.context)
 
-bpy.app.handlers.render_pre.append(render_pre)
+
 
 def get_from_marker_start(self):
     return get_marker_check(self,'start')
@@ -83,7 +90,8 @@ def get_marker_check(self,start):
                     scene.frame_start = marker_frame
                 else:
                     scene.frame_end = marker_frame
-            
+        elif self.index == 9999:
+            marker_frame = 0 
         else:
             marker_frame = fixMarkers(self,start,'IndexError')
 
@@ -104,7 +112,7 @@ def fixMarkers(self,start,err):
         
 
     if err == 'IndexError':
-        #print(err)
+        print('debug',err)
         #try name
         i= markers.find(link.name)
         if i > -1:
@@ -112,7 +120,7 @@ def fixMarkers(self,start,err):
             return markers[i].frame
 
         else:
-            #print('name not found')
+            print('name not found')
             link.index = 9999
             link.name = 'Marker Not Found' 
             if start == 'start':
@@ -122,7 +130,7 @@ def fixMarkers(self,start,err):
             return 0
 
     elif err == 'NameError':
-        #print(err)
+        print('debug',err)
         #try name
         i= markers.find(link.name)
         if i > -1:
@@ -131,7 +139,7 @@ def fixMarkers(self,start,err):
 
         elif markers[link.index].select== True:
             #Renamed
-            #print('A Marker was re-named')
+            print('A Marker was re-named')
             #batch re-name
             for shot in scene.sm_prop_grp:
                 if shot.start_marker.name == link.name: 
@@ -142,7 +150,7 @@ def fixMarkers(self,start,err):
             return markers[link.index].frame
 
         else:
-            #print('A Marker was deleted')
+            print('A Marker was deleted')
             link.index = 9999
             link.name = 'Marker Missing' 
             if start == 'start':
@@ -152,7 +160,7 @@ def fixMarkers(self,start,err):
             return 0
             
     else:
-        print(err)
+        print('debug',err)
         return 0
 
 def poll(self,value):
@@ -195,6 +203,7 @@ class SM_Start_Marker_grp(bpy.types.PropertyGroup):
     frame: IntProperty(
         name = "Marker Frame",
         description = "Linked start frame",
+        default = 0,
         get = get_from_marker_start,
         )
 
@@ -215,6 +224,7 @@ class SM_End_Marker_grp(bpy.types.PropertyGroup):
     frame: IntProperty(
         name = "Marker Frame",
         description = "Linked start frame",
+        default = 250,
         get = get_from_marker_end,
         )
 
@@ -363,12 +373,20 @@ def register():
         )
     
     
-
     try:
         from .Pro.__init__ import pro_register
         pro_register()
     except ModuleNotFoundError:
         pass
+    
+    try:
+        bpy.app.handlers.frame_change_pre.remove(update_on_frame)
+        bpy.app.handlers.render_pre.remove(render_pre)
+    except:
+        pass
+
+    bpy.app.handlers.frame_change_pre.append(update_on_frame)
+    bpy.app.handlers.render_pre.append(render_pre)
 
 
 def unregister():
