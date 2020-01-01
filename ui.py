@@ -66,7 +66,10 @@ class SM_PT_shot_manager(Panel):
                 col.operator('sm.link', text=link_text_start,icon = 'UNLINKED').StartEnd = 1
                 col.prop(shot, "start_frameALT",text= 'Start')
             else:
-                sf = str(scene.timeline_markers[link_text_start].frame)
+                try:
+                    sf = str(scene.timeline_markers[link_text_start].frame)  
+                except KeyError:
+                    sf = '0'
                 col.operator('sm.link', text= link_text_start,icon = 'LINK_BLEND').StartEnd = 3
                 col.label(text ='Start: '+ sf)
 
@@ -77,7 +80,10 @@ class SM_PT_shot_manager(Panel):
                 col.operator('sm.link', text=link_text_end,icon = 'UNLINKED').StartEnd = 2
                 col.prop(shot, "end_frameALT",text= 'End')
             else:
-                sf = str(scene.timeline_markers[link_text_end].frame) 
+                try:
+                    sf = str(scene.timeline_markers[link_text_end].frame)
+                except KeyError:
+                    sf = '0' 
                 col.operator('sm.link', text= link_text_end,icon = 'LINK_BLEND').StartEnd = 4
                 col.label(text ='End: '+ sf)
                 
