@@ -81,11 +81,11 @@ class SM_PT_shot_manager(Panel):
                 col.prop(shot, "end_frameALT",text= 'End')
             else:
                 try:
-                    sf = str(scene.timeline_markers[link_text_end].frame)
+                    ef = str(scene.timeline_markers[link_text_end].frame)
                 except KeyError:
-                    sf = '0' 
+                    ef = '0' 
                 col.operator('sm.link', text= link_text_end,icon = 'LINK_BLEND').StartEnd = 4
-                col.label(text ='End: '+ sf)
+                col.label(text ='End: '+ ef)
                 
 
             row = layout.row()
