@@ -58,16 +58,21 @@ def update_on_frame(self):
         grp[index].end_marker.frame
     else:
         pass
+    #print('SM.frame')
+    return
 
 
 def render_pre(self):
     updateList(self,bpy.context)
+    #print('SM.renderpost')
+    return
 
 def render_complete(self):
     grp,index = getShots() 
     shot = grp[index]
     count_files(self,bpy.context,shot)
-    print('SM.renderpost')
+    #print('SM.rendercomplete')
+    return
 
 def get_from_marker_start(self):
     return get_marker_check(self,'start')
@@ -383,12 +388,6 @@ def register():
     
     
     try:
-        from .Pro.__init__ import pro_register
-        pro_register()
-    except ModuleNotFoundError:
-        pass
-    
-    try:
         bpy.app.handlers.frame_change_pre.remove(update_on_frame)
         bpy.app.handlers.render_pre.remove(render_pre)
         bpy.app.handlers.render_complete.remove(render_complete)
@@ -401,11 +400,6 @@ def register():
 
 
 def unregister():
-    try:
-        from .Pro.__init__ import pro_unregister
-        pro_unregister()
-    except ModuleNotFoundError:
-        pass
 
     
     from bpy.utils import unregister_class
