@@ -43,14 +43,19 @@ from bpy.props import (StringProperty,
                        )
 
 #----------------------------------------------------------------------------------------
+def getShots():
+    scene = bpy.context.scene
+    grp = scene.sm_prop_grp
+    index = scene.sm_list_index
+    return (grp, index)
 
 def update_on_frame(self):
+    grp,index = getShots() 
     scene =  bpy.context.scene
-    index = scene.sm_list_index
 
     if scene.sm_use == True and len(scene.sm_prop_grp) !=0:
-        scene.sm_prop_grp[index].start_marker.frame
-        scene.sm_prop_grp[index].end_marker.frame
+        grp[index].start_marker.frame
+        grp[index].end_marker.frame
     else:
         pass
 
