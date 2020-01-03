@@ -16,9 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-import bpy
+import bpy,os
 from bpy.types import Panel
-
 
 
 class SM_PT_shot_manager(Panel):
