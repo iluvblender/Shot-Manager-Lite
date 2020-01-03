@@ -17,7 +17,7 @@
 
 import bpy,os,json
 
-from .ui import (SM_PT_shot_manager, SM_UL_List, SM_PT_output,SM_PT_QuickPanel,SM_PT_settings)
+from .ui import count_files
 
 from bpy.props import (StringProperty,
                        BoolProperty,
