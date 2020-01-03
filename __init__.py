@@ -20,7 +20,7 @@ bl_info = {
     "author" : "Pablo TA.",
     "description" : "",
     "blender" : (2, 80, 0),
-    "version" : (0, 5, 6),
+    "version" : (0, 5, 7),
     "location" : "Properties > Scene",
     "warning" : "",
     "category" : "Render",
@@ -58,7 +58,11 @@ def update_on_frame(self):
 def render_pre(self):
     updateList(self,bpy.context)
 
-
+def render_complete(self):
+    grp,index = getShots() 
+    shot = grp[index]
+    count_files(self,bpy.context,shot)
+    print('SM.renderpost')
 
 def get_from_marker_start(self):
     return get_marker_check(self,'start')
@@ -368,7 +372,7 @@ def register():
         name = "Unsaved layers default",
         description = "Select a default state for unsaved View Layers",
         default ='None',
-        items= {('None','None','None'),('Off','Off','Off'),('On','On','On')}
+        items= {('None','None','None',0),('Off','Off','Off',1),('On','On','On',2)}
 
         )
     
@@ -382,11 +386,13 @@ def register():
     try:
         bpy.app.handlers.frame_change_pre.remove(update_on_frame)
         bpy.app.handlers.render_pre.remove(render_pre)
+        bpy.app.handlers.render_complete.remove(render_complete)
     except:
         pass
 
     bpy.app.handlers.frame_change_pre.append(update_on_frame)
     bpy.app.handlers.render_pre.append(render_pre)
+    bpy.app.handlers.render_complete.append(render_complete)
 
 
 def unregister():
