@@ -84,6 +84,7 @@ def updateList(self,context):
         shot = scene.sm_prop_grp[index]
         name = shot.name.strip()
         render_path = os.path.join(path, name , name + '_')
+        count_files(self,context,shot)
 
         if shot.custom_camera != None:
             scene.camera = shot.custom_camera
