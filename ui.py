@@ -171,6 +171,28 @@ class SM_PT_Footer(Panel):
         col.label(text='Remove all shots')
         col.operator('my_list.delete',text='',icon = 'TRASH').delete_all=True
 
+file_count = ['0']
+def count_files(self,context,shot):
+        scene = context.scene
+        count = 0
+        path = os.path.join(bpy.path.abspath(scene.sm_path),shot.name)
+        ext = scene.render.file_extension
+        
+        if os.path.isdir(path):
+            
+            
+            list_dir = []
+            list_dir = os.listdir(path)
+            for file in list_dir:
+                if file.endswith(ext):
+                    count += 1
+        else:
+            count = 0
+
+        file_count[0] = ext + " Files: " + str(count) 
+        
+        
+        
 class SM_PT_output(Panel):
     bl_label = "Output Summary"
     bl_parent_id = "SCENE_PT_shotmanager"
@@ -195,6 +217,8 @@ class SM_PT_output(Panel):
         row.prop(scene, "sm_path")
         row = layout.row()
         row.label(text="RENDER PATH:  " + scene.render.filepath)
+        row = layout.row()
+        row.label(text= file_count[0])
 
         #View Layers
         layout.label(text="View Layers:")
