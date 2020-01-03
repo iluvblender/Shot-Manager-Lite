@@ -49,17 +49,6 @@ def getShots():
     index = scene.sm_list_index
     return (grp, index)
 
-def update_on_frame(self):
-    grp,index = getShots() 
-    scene =  bpy.context.scene
-
-    if scene.sm_use == True and len(scene.sm_prop_grp) !=0:
-        grp[index].start_marker.frame
-        grp[index].end_marker.frame
-    else:
-        pass
-    #print('SM.frame')
-    return
 
 
 def render_pre(self):
@@ -388,13 +377,11 @@ def register():
     
     
     try:
-        bpy.app.handlers.frame_change_pre.remove(update_on_frame)
         bpy.app.handlers.render_pre.remove(render_pre)
         bpy.app.handlers.render_complete.remove(render_complete)
     except:
         pass
 
-    bpy.app.handlers.frame_change_pre.append(update_on_frame)
     bpy.app.handlers.render_pre.append(render_pre)
     bpy.app.handlers.render_complete.append(render_complete)
 
