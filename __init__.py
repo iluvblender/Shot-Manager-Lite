@@ -29,7 +29,7 @@ bl_info = {
 
 import bpy,os
 
-from .ui import (SM_PT_shot_manager, SM_UL_List, SM_PT_output,SM_PT_QuickPanel,SM_PT_settings, SM_PT_Footer)
+from .ui import (SM_PT_shot_manager, SM_UL_List, SM_PT_output,SM_PT_QuickPanel,SM_PT_settings, SM_PT_Footer,count_files)
 from .operators import*
 
 from bpy.props import (StringProperty,
