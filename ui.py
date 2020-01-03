@@ -19,7 +19,7 @@
 import bpy,os
 from bpy.types import Panel
 
-
+marker_detect = [0,0]
 class SM_PT_shot_manager(Panel):
     """Creates a Panel in the scene context of the properties editor"""
     bl_label = "Shot Manager"
@@ -67,8 +67,14 @@ class SM_PT_shot_manager(Panel):
             else:
                 try:
                     sf = str(scene.timeline_markers[link_text_start].frame)  
+
+                    if marker_detect[0] != sf:
+                        marker_detect[0] = sf
+                        shot.start_marker.frame
+
                 except KeyError:
                     sf = '0'
+                    
                 col.operator('sm.link', text= link_text_start,icon = 'LINK_BLEND').StartEnd = 3
                 col.label(text ='Start: '+ sf)
 
@@ -81,11 +87,17 @@ class SM_PT_shot_manager(Panel):
             else:
                 try:
                     ef = str(scene.timeline_markers[link_text_end].frame)
+
+                    if marker_detect[1] != ef:
+                        marker_detect[1] = ef
+                        shot.end_marker.frame
+
                 except KeyError:
-                    ef = '0' 
+                    ef = '0'
+                    
                 col.operator('sm.link', text= link_text_end,icon = 'LINK_BLEND').StartEnd = 4
                 col.label(text ='End: '+ ef)
-                
+           
 
             row = layout.row()
             duration = scene.frame_end - scene.frame_start
