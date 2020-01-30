@@ -339,7 +339,7 @@ class SM_UL_List(bpy.types.UIList):
 
         layout.scale_x = 1
 
-        layout.label(text=item.name)
+        layout.prop(item, 'name',text="", emboss=False, icon_value=icon)
         
         
         if item.custom_camera != None:
