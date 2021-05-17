@@ -201,7 +201,7 @@ class SM_OT_mainLayer(bpy.types.Operator):
 
     def invoke(self,context,event):
         wm = context.window_manager
-        return wm.invoke_props_dialog(self,height= 100,width = 200)
+        return wm.invoke_props_dialog(self,width = 200)
 
     def execute(self,context):
         scene = context.scene
