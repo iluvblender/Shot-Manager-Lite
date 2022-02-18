@@ -39,7 +39,7 @@ def shotChange(self,context):
     #set frames
     if len(scene.sm_prop_grp) !=0:
         shot = scene.sm_prop_grp[index]
-        
+
         #only on shot change, not all updates
         if shot.start_marker.index == 9999:
             scene.frame_start = shot.start_frameALT
@@ -66,7 +66,7 @@ def shotChange(self,context):
                     override = {'window': window, 'screen': screen,'region':region, 'area': area}
                     bpy.ops.action.view_frame(override)
 
-                    
+
         #Update View layer to 'Primary
         if scene.sm_mainLayer == True:
           if shot.main in scene.view_layers.keys():
@@ -75,10 +75,10 @@ def shotChange(self,context):
         updateList(self,context)
 
 def updateList(self,context):
-    
+
     scene = context.scene
     path = scene.sm_path
-    
+
     if scene.sm_use == True and len(scene.sm_prop_grp) !=0 :
         index = scene.sm_list_index
         shot = scene.sm_prop_grp[index]
@@ -90,7 +90,7 @@ def updateList(self,context):
             scene.camera = shot.custom_camera
         scene.render.film_transparent= shot.alpha
 
-        #view layer Defaults 
+        #view layer Defaults
         if scene.sm_view_layers_default == 'On':
             for layer in scene.view_layers:
                 layer.use = True
@@ -121,7 +121,7 @@ def updateList(self,context):
                     scene.sm_warning = 'Outdated-Update'
                     #print('Saved View Layers Name Mismatch')
                     break
-                
+
         else:
             scene.sm_warning = "Save View Layers"
 
@@ -134,7 +134,7 @@ def updateList(self,context):
 
 
             for node in scene.node_tree.nodes:
-                if 'ShotList' in node.bl_idname:
+                if 'ShotList' in node.name:
                     #Update Shot List Node----------
                     node.backup_path = render_path
                     node.update()
@@ -144,12 +144,12 @@ def updateList(self,context):
                 else:
                     scene.render.filepath = render_path
 
-                    
+
         else:
             scene.render.filepath = render_path
 
 def poll(self,value):
-    
+
     return bpy.context.scene.sm_use
 
 def view_layers_enum(self,context):
@@ -162,12 +162,12 @@ def view_layers_enum(self,context):
         main.append((name,name,name))
 
     return  main
-     
+
 
 class SM_OT_save(bpy.types.Operator):
-    bl_idname = "sm.save_layers" 
+    bl_idname = "sm.save_layers"
     bl_label = "Save View Layer states"
-    bl_description = "Save View Layer states" 
+    bl_description = "Save View Layer states"
 
     clear: BoolProperty()
     context_: IntProperty()
@@ -177,7 +177,7 @@ class SM_OT_save(bpy.types.Operator):
         #index = scene.sm_list_index
         shot = scene.sm_prop_grp[self.context_]
 
-        L ='' 
+        L =''
         if self.clear == False:
             for v in bpy.context.scene.view_layers:
                 L +=  '*'+ v.name +'^^' + str(v.use)
@@ -188,14 +188,14 @@ class SM_OT_save(bpy.types.Operator):
             self.report({'INFO'},'View Layers Cleared')
 
 
-        
+
         updateList(self,context)
         return {'FINISHED'}
 
 class SM_OT_mainLayer(bpy.types.Operator):
-    bl_idname = "sm.mainlayer" 
+    bl_idname = "sm.mainlayer"
     bl_label = "Primary Layer"
-    bl_description = "Save a view layer as the primary workspace" 
+    bl_description = "Save a view layer as the primary workspace"
 
     V_layers : EnumProperty(items = view_layers_enum)
 
@@ -214,8 +214,8 @@ class SM_OT_mainLayer(bpy.types.Operator):
         return {'FINISHED'}
 
 class LIST_OT_delete(bpy.types.Operator):
-    bl_idname = "my_list.delete" 
-    bl_label = "Delete shot" 
+    bl_idname = "my_list.delete"
+    bl_label = "Delete shot"
     bl_description = 'Delete shot'
 
     index: IntProperty()
@@ -224,8 +224,8 @@ class LIST_OT_delete(bpy.types.Operator):
     def invoke(self,context,event):
         wm=context.window_manager
         return wm.invoke_confirm(self,event)
-    
-    def execute(self, context): 
+
+    def execute(self, context):
         prop_grp  = context.scene.sm_prop_grp
         index = self.index
         if self.delete_all==True:
@@ -239,16 +239,16 @@ class LIST_OT_delete(bpy.types.Operator):
 
         return {'FINISHED'}
 class LIST_OT_sort(bpy.types.Operator):
-    bl_idname = "my_list.update" 
-    bl_label = "Shot" 
+    bl_idname = "my_list.update"
+    bl_label = "Shot"
     bl_description = 'Shot'
 
     index: IntProperty()
     Add: BoolProperty()
     Move: StringProperty()
 
-    def execute(self, context): 
-        
+    def execute(self, context):
+
         prop_grp  = context.scene.sm_prop_grp
         index = self.index
 
@@ -260,15 +260,15 @@ class LIST_OT_sort(bpy.types.Operator):
 
         elif self.Move == 'UP':
             neighbor = index -1
-            prop_grp.move(neighbor, index) 
-            
+            prop_grp.move(neighbor, index)
+
 
             self.Move = 'none'
 
         elif self.Move == 'DOWN':
             neighbor = index+1
-            prop_grp.move(neighbor, index) 
-            
+            prop_grp.move(neighbor, index)
+
             self.Move = 'none'
 
         updateList(self,context)
@@ -276,7 +276,7 @@ class LIST_OT_sort(bpy.types.Operator):
         return {'FINISHED'}
 
 class SM_OT_Qpick(bpy.types.Operator):
-    bl_idname = "sm.quickpick" 
+    bl_idname = "sm.quickpick"
     bl_label = "Quick Select"
     bl_description = "Quick Select shot"
 
@@ -287,9 +287,9 @@ class SM_OT_Qpick(bpy.types.Operator):
         return{'FINISHED'}
 
 class SM_OT_Link(bpy.types.Operator):
-    bl_idname = "sm.link" 
-    bl_label = "Link to selected marker" 
-    bl_description = "Link to selected marker" 
+    bl_idname = "sm.link"
+    bl_label = "Link to selected marker"
+    bl_description = "Link to selected marker"
 
     StartEnd: IntProperty()
 
@@ -302,12 +302,12 @@ class SM_OT_Link(bpy.types.Operator):
                 self.activeMarker = m
                 return m != False
                 break
- 
-    def execute(self, context): 
+
+    def execute(self, context):
         scene = context.scene
         index = scene.sm_list_index
         shot = scene.sm_prop_grp[index]
- 
+
         markers = list(scene.timeline_markers)
 
         #set Start marker
@@ -341,18 +341,18 @@ class SM_OT_Link(bpy.types.Operator):
             #print(shot.end_marker.index)
             self.StartEnd = 0
             self.report({'INFO'},'unlinked start marker ')
-         
+
 
         shotChange(self,context)
-        return {'FINISHED'}       
+        return {'FINISHED'}
 
 class SM_OT_saveJSON(bpy.types.Operator):
-    bl_idname = "sm.savejson" 
+    bl_idname = "sm.savejson"
     bl_label = "Save json"
-    bl_description = "Save shots into json" 
+    bl_description = "Save shots into json"
 
     filepath : StringProperty(subtype="DIR_PATH")
-    
+
     @classmethod
     def poll(self,context):
         return len(context.scene.sm_prop_grp) != 0
@@ -369,32 +369,32 @@ class SM_OT_saveJSON(bpy.types.Operator):
 
         filepath = os.path.splitext(self.filepath)[0]
         json_file = open(bpy.path.abspath(filepath)+'.json',"w+")
-        
+
         version = bl_info['version']
 
         dictionary = {'version': version}
 
         for index,shot in enumerate(scene.sm_prop_grp):
-            
+
             items = {}
 
             for prop in shot.keys():
                 #markers
                 if prop == 'start_marker':
-                    items_list = shot[prop].items()
+                    items_list = list(shot[prop].items())
                     i = scene.sm_prop_grp[index].start_marker.frame
                     #frame isn't listed in items()
                     items_list.append(('frame',i))
                     items[prop] = dict(items_list)
-                    
+
 
                 elif prop == 'end_marker':
-                    items_list = shot[prop].items()
+                    items_list = list(shot[prop].items())
                     i = scene.sm_prop_grp[index].end_marker.frame
                     items_list.append(('frame',i))
                     #frame isn't listed in items()
                     items[prop] = dict(items_list)
-                    
+
                 #camera object
                 elif prop == 'custom_camera':
                     if shot[prop] != None:
@@ -415,12 +415,12 @@ class SM_OT_saveJSON(bpy.types.Operator):
 
 
         return {'FINISHED'}
-        
+
 
 class SM_OT_openJSON(bpy.types.Operator):
-    bl_idname = "sm.openjson" 
+    bl_idname = "sm.openjson"
     bl_label = "Open json"
-    bl_description = "Load shots from json" 
+    bl_description = "Load shots from json"
 
     filepath : StringProperty(subtype="DIR_PATH")
     ignore : BoolProperty(name="Ignore existing shots",default = True)
@@ -442,9 +442,9 @@ class SM_OT_openJSON(bpy.types.Operator):
         except:
             self.report({'ERROR'},'Not a valid JSON file')
             return {'FINISHED'}
-        
+
         if op == True:
-            try: 
+            try:
                 version = json_parsed['version']
                 print('version:',json_parsed['version'])
 
@@ -468,8 +468,8 @@ class SM_OT_openJSON(bpy.types.Operator):
                         name = props.get('name','New Shot')
                         notes = props.get('notes','')
                         alpha= props.get('alpha',False)
-                        
-                        
+
+
                         start_marker_name = props.get('start_marker',"").get('name',"")
                         start_marker_index = props.get('start_marker',"").get('index',9999)
                         start_marker_frame = props.get('start_marker',"").get('frame',0)
@@ -491,7 +491,7 @@ class SM_OT_openJSON(bpy.types.Operator):
                                 else:
                                     new.start_marker.index = start_marker_index
                                     new.start_marker.name = start_marker_name
-                                     
+
                             except:
                                 pass
                                 print('could not import start marker')
@@ -504,7 +504,7 @@ class SM_OT_openJSON(bpy.types.Operator):
                                     new.end_frameALT = end_marker_frame
                                     print('missing marker, flattened')
                                 else:
-                                    new.end_marker.index = end_marker_index 
+                                    new.end_marker.index = end_marker_index
                                     new.end_marker.name = end_marker_name
                             except:
                                 pass
@@ -512,7 +512,7 @@ class SM_OT_openJSON(bpy.types.Operator):
                         #Other Data
                         new.name = name
                         if custom_camera in scene.objects.keys():
-                            new.custom_camera = scene.objects[custom_camera] 
+                            new.custom_camera = scene.objects[custom_camera]
 
                         new.view_layers = view_layers
                         if enable == 1:
@@ -522,13 +522,13 @@ class SM_OT_openJSON(bpy.types.Operator):
                         new.notes = notes
                         new.alpha = alpha
 
-                        
 
 
-                
+
+
             self.report({'INFO'},'Loaded Shots sucessfully')
 
-            
+
 
         return {'FINISHED'}
 
